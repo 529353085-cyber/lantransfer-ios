@@ -167,7 +167,7 @@ struct CompleteNotice: Identifiable {
 }
 
 /// 聊天消息（本地存储与 UI 展示统一模型）。
-struct ChatMessage: Identifiable, Hashable {
+struct ChatMessage: Codable, Identifiable, Hashable {
     var msgId: String
     var fromDeviceId: String
     var toDeviceId: String
