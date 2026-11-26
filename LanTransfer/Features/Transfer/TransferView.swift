@@ -28,6 +28,9 @@ struct TransferView: View {
                 } else {
                     recordList
                 }
+
+                PromoSloganView()
+                    .padding(.bottom, 6)
             }
             .navigationTitle("传输")
             .toolbar {

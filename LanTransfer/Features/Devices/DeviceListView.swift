@@ -32,6 +32,18 @@ struct EmptyStateView: View {
     }
 }
 
+/// 全应用统一广告标语，放在各页面底部。
+struct PromoSloganView: View {
+    var body: some View {
+        Text("抖音：章鱼千宝盒")
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+            .frame(maxWidth: .infinity)
+            .multilineTextAlignment(.center)
+            .padding(.vertical, 4)
+    }
+}
+
 /// 任务状态中文文案（internal，供传输页复用）。
 func transferStatusText(_ status: TaskStatus) -> String {
     switch status {
@@ -75,6 +87,10 @@ struct DeviceListView: View {
                             }
                         }
                     }
+                }
+
+                Section {
+                    PromoSloganView()
                 }
             }
             .navigationTitle("设备")
@@ -204,6 +220,9 @@ private struct DeviceDetailView: View {
                 .buttonStyle(.bordered)
             }
             .padding(.horizontal, 24)
+
+            PromoSloganView()
+                .padding(.horizontal, 24)
 
             Spacer()
         }

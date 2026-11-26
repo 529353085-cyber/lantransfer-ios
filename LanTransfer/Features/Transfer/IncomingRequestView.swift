@@ -70,6 +70,8 @@ struct IncomingRequestView: View {
                     .buttonStyle(.borderedProminent)
                     .frame(maxWidth: .infinity)
                 }
+
+                PromoSloganView()
             }
             .padding(24)
             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20))

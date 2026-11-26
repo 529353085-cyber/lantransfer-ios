@@ -45,6 +45,9 @@ struct ChatView: View {
             Divider()
 
             ChatComposer()
+
+            PromoSloganView()
+                .padding(.bottom, 6)
         }
         .navigationTitle(peerName)
         .navigationBarTitleDisplayMode(.inline)

@@ -25,23 +25,28 @@ struct ChatConversationListView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
-                if appState.conversations.isEmpty {
-                    EmptyStateView(
-                        systemImage: "bubble.left.and.bubble.right",
-                        title: "暂无会话",
-                        message: "在设备页点击「发消息」即可开始聊天"
-                    )
-                } else {
-                    List {
-                        ForEach(appState.conversations) { conversation in
-                            NavigationLink(value: conversation) {
-                                ConversationRow(summary: conversation)
+            VStack(spacing: 0) {
+                Group {
+                    if appState.conversations.isEmpty {
+                        EmptyStateView(
+                            systemImage: "bubble.left.and.bubble.right",
+                            title: "暂无会话",
+                            message: "在设备页点击「发消息」即可开始聊天"
+                        )
+                    } else {
+                        List {
+                            ForEach(appState.conversations) { conversation in
+                                NavigationLink(value: conversation) {
+                                    ConversationRow(summary: conversation)
+                                }
                             }
                         }
+                        .listStyle(.plain)
                     }
-                    .listStyle(.plain)
                 }
+
+                PromoSloganView()
+                    .padding(.bottom, 8)
             }
             .navigationTitle("聊天")
             .navigationDestination(for: ConversationSummary.self) { summary in

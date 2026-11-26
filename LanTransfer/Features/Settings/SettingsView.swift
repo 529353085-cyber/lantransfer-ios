@@ -64,6 +64,10 @@ struct SettingsView: View {
                     }
                     .frame(maxWidth: .infinity)
                 }
+
+                Section {
+                    PromoSloganView()
+                }
             }
             .navigationTitle("设置")
             .onAppear {
