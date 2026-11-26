@@ -35,7 +35,7 @@ workflows:
     max_build_duration: 120
 
     # 云端 macOS 构建机。免费账号每月有一定构建时长额度，以 Codemagic 后台为准。
-    instance_type: mac_mini
+    instance_type: mac_mini_m2
 
     environment:
       # 云端最新的 Xcode，满足本工程 iOS 16+ 基线。
