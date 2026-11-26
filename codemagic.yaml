@@ -1,0 +1,132 @@
+# ============================================================================
+# 局域网快传 (LanTransfer) — Codemagic 云构建配置（未签名 IPA）
+# ============================================================================
+# 目标：在没有 Mac、没有 Apple Developer 付费账号的情况下，用 Codemagic 的
+#       云端 macOS 机器把本工程编译为一个【未签名的 .ipa】，供你在 iPhone 上
+#       使用「全能签」等第三方工具导入自己的证书与描述文件重新签名后安装。
+#
+# 原理：IPA 本质是一个 zip 包，标准结构为 Payload/*.app。全能签重签时会自行
+#       注入 p12 证书和 mobileprovision 描述文件，因此它需要的输入是未签名的
+#       .app。所以本配置在 archive 阶段通过 CODE_SIGNING_ALLOWED=NO 关闭代码
+#       签名，再把归档里的 .app 按 Payload 目录结构手动打包成 .ipa。整个过程
+#       不需要任何证书、描述文件、Team ID 或 App Store Connect API Key。
+#
+# 为什么不用 xcodebuild -exportArchive：
+#   -exportArchive（无论 method=development 还是 app-store）都要求工程具备有效
+#   的签名身份与描述文件；在没有任何苹果签名材料的前提下会直接失败。而手动
+#   zip Payload 只依赖 macOS 自带的 xcodebuild / zip，零签名依赖，在 Codemagic
+#   免费额度下成功率最高，也最符合「未签名 IPA」的定义。
+#
+# 使用前准备（详见同目录 RESIGN_INSTALL_GUIDE.md）：
+#   1. 一个 GitHub 账号，把 ios 目录内容推送到仓库。
+#   2. 一个 Codemagic 账号（用 GitHub 登录即可，无需苹果开发者账号）。
+#   3. 在 iPhone 上安装「全能签」，并准备好 p12 证书与 mobileprovision 描述文件。
+#
+# 重要：Codemagic 默认在仓库【根目录】查找 codemagic.yaml。
+#   本文件位于 ios/ 目录下。若你推送的是整个项目仓库（含 android/ desktop/ ios/），
+#   请在 Codemagic 项目设置里把 Configuration file 路径改为 ios/codemagic.yaml；
+#   或者只把 ios 目录的内容作为仓库根推送，此时配置文件路径就是 codemagic.yaml。
+# ============================================================================
+
+workflows:
+  lantransfer-ipa:
+    name: LanTransfer — 未签名 IPA（供全能签重签）
+    # 单次构建最长 120 分钟，超时自动终止，避免占用过多免费构建额度。
+    max_build_duration: 120
+
+    # 云端 macOS 构建机。免费账号每月有一定构建时长额度，以 Codemagic 后台为准。
+    instance_type: mac_mini
+
+    environment:
+      # 云端最新的 Xcode，满足本工程 iOS 16+ 基线。
+      xcode: latest
+
+      # 本工程不使用 CocoaPods / Node.js，无需额外安装。
+      # 仅需两个变量：工程相对路径与 Scheme 名称。
+      vars:
+        # 若仓库根目录就是 ios/ 的内容，用下面的值；
+        # 若仓库还包含 android/ desktop/ 等目录，改为 "ios/LanTransfer.xcodeproj"。
+        XCODE_PROJECT: "LanTransfer.xcodeproj"
+        XCODE_SCHEME: "LanTransfer"
+
+    scripts:
+      # ----------------------------------------------------------------------
+      # 步骤 1：归档，但显式关闭代码签名，得到未签名的 .xcarchive。
+      #   CODE_SIGNING_ALLOWED=NO / CODE_SIGNING_REQUIRED=NO / CODE_SIGNING_IDENTITY=""
+      #   三者一起设置，确保即使在 UI 里误配置了签名也不会把签名打进归档。
+      # ----------------------------------------------------------------------
+      - name: 归档（禁用代码签名）
+        script: |
+          set -e
+          mkdir -p "$HOME/build"
+          xcodebuild \
+            -project "$XCODE_PROJECT" \
+            -scheme "$XCODE_SCHEME" \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$HOME/build/LanTransfer.xcarchive" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_IDENTITY="" \
+            clean archive
+
+      # ----------------------------------------------------------------------
+      # 步骤 2：把归档里的 .app 按 IPA 标准结构（Payload/*.app）手动打包成未签名 .ipa。
+      #   关键点：
+      #   - 用 glob 自动定位 .app，避免硬编码产品名（BSD find 无 -maxdepth）。
+      #   - 校验 Info.plist 完整，确保全能签能读取 Bundle ID。
+      #   - 先 cd 进暂存目录再 zip Payload，避免把上级绝对路径打进压缩包。
+      # ----------------------------------------------------------------------
+      - name: 生成未签名 IPA
+        script: |
+          set -e
+          ARCHIVE_PRODUCTS="$HOME/build/LanTransfer.xcarchive/Products/Applications"
+          STAGE_DIR="$HOME/build/ipa-stage"
+          OUT_DIR="$HOME/build/output"
+
+          # 定位归档产物中的 .app（默认名为 LanTransfer.app）。
+          APP_PATH=$(ls -d "$ARCHIVE_PRODUCTS"/*.app 2>/dev/null | head -n 1)
+          if [ -z "$APP_PATH" ]; then
+            echo "错误：归档中未找到 .app 产物，请检查归档步骤日志。"
+            exit 1
+          fi
+          APP_NAME=$(basename "$APP_PATH")
+          echo "归档 .app: $APP_NAME"
+
+          # 重建暂存目录，构造 Payload/*.app。
+          rm -rf "$STAGE_DIR" "$OUT_DIR"
+          mkdir -p "$STAGE_DIR/Payload" "$OUT_DIR"
+          cp -R "$APP_PATH" "$STAGE_DIR/Payload/$APP_NAME"
+
+          # 校验 Info.plist 存在且 Bundle ID 可读。
+          INFO_PLIST="$STAGE_DIR/Payload/$APP_NAME/Info.plist"
+          if [ ! -f "$INFO_PLIST" ]; then
+            echo "错误：未在 .app 中找到 Info.plist。"
+            exit 1
+          fi
+          BUNDLE_ID=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$INFO_PLIST")
+          echo "Bundle ID: $BUNDLE_ID"
+
+          # 关键：进入暂存目录后再 zip，保证包内只有 Payload/ 相对路径。
+          cd "$STAGE_DIR"
+          zip -qry "$OUT_DIR/LanTransfer.ipa" Payload
+          echo "已生成 IPA: $OUT_DIR/LanTransfer.ipa"
+
+      # ----------------------------------------------------------------------
+      # 步骤 3：校验产物存在且非空，避免产出空包后被 artifacts 静默跳过。
+      # ----------------------------------------------------------------------
+      - name: 校验 IPA 产物
+        script: |
+          set -e
+          IPA_FILE="$HOME/build/output/LanTransfer.ipa"
+          if [ ! -s "$IPA_FILE" ]; then
+            echo "错误：IPA 产物不存在或为空：$IPA_FILE"
+            exit 1
+          fi
+          echo "IPA 校验通过："
+          ls -lh "$IPA_FILE"
+          unzip -l "$IPA_FILE" | head -n 20
+
+    # 收集未签名 IPA 作为构建产物，构建完成后在 Artifacts 页下载。
+    artifacts:
+      - $HOME/build/output/*.ipa

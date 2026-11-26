@@ -1,0 +1,447 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A00000000000000000000011 /* LanTransferApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000010 /* LanTransferApp.swift */; };
+		A00000000000000000000013 /* ChatChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000012 /* ChatChannel.swift */; };
+		A00000000000000000000015 /* ChatManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000014 /* ChatManager.swift */; };
+		A00000000000000000000017 /* DeviceRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000016 /* DeviceRegistry.swift */; };
+		A00000000000000000000019 /* DiscoveryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000018 /* DiscoveryManager.swift */; };
+		A0000000000000000000001b /* TcpConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000000000000000000001a /* TcpConnection.swift */; };
+		A0000000000000000000001d /* TcpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000000000000000000001c /* TcpServer.swift */; };
+		A0000000000000000000001f /* ByteReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000000000000000000001e /* ByteReader.swift */; };
+		A00000000000000000000021 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000020 /* Constants.swift */; };
+		A00000000000000000000023 /* FrameCodec.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000022 /* FrameCodec.swift */; };
+		A00000000000000000000025 /* JSONValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000024 /* JSONValue.swift */; };
+		A00000000000000000000027 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000026 /* Messages.swift */; };
+		A00000000000000000000029 /* ChatMessageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000028 /* ChatMessageStore.swift */; };
+		A0000000000000000000002b /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000000000000000000002a /* SettingsStore.swift */; };
+		A0000000000000000000002d /* TransferRecordStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000000000000000000002c /* TransferRecordStore.swift */; };
+		A0000000000000000000002f /* ChecksumUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000000000000000000002e /* ChecksumUtil.swift */; };
+		A00000000000000000000031 /* ChunkPlanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000030 /* ChunkPlanner.swift */; };
+		A00000000000000000000033 /* FolderBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000032 /* FolderBundle.swift */; };
+		A00000000000000000000035 /* PathSanitizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000034 /* PathSanitizer.swift */; };
+		A00000000000000000000037 /* ReceiveState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000036 /* ReceiveState.swift */; };
+		A00000000000000000000039 /* ResumeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000038 /* ResumeManager.swift */; };
+		A0000000000000000000003b /* TransferManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000000000000000000003a /* TransferManager.swift */; };
+		A0000000000000000000003d /* ChatComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000000000000000000003c /* ChatComposer.swift */; };
+		A0000000000000000000003f /* ChatConversationListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000000000000000000003e /* ChatConversationListView.swift */; };
+		A00000000000000000000041 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000040 /* ChatView.swift */; };
+		A00000000000000000000043 /* DeviceListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000042 /* DeviceListView.swift */; };
+		A00000000000000000000045 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000044 /* SettingsView.swift */; };
+		A00000000000000000000047 /* IncomingRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000046 /* IncomingRequestView.swift */; };
+		A00000000000000000000049 /* TransferView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000048 /* TransferView.swift */; };
+		A0000000000000000000004b /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000000000000000000004a /* AppState.swift */; };
+		A0000000000000000000004d /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000000000000000000004c /* ContentView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A00000000000000000000010 /* LanTransferApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LanTransferApp.swift"; sourceTree = "<group>"; };
+		A00000000000000000000012 /* ChatChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatChannel.swift"; sourceTree = "<group>"; };
+		A00000000000000000000014 /* ChatManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatManager.swift"; sourceTree = "<group>"; };
+		A00000000000000000000016 /* DeviceRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceRegistry.swift"; sourceTree = "<group>"; };
+		A00000000000000000000018 /* DiscoveryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DiscoveryManager.swift"; sourceTree = "<group>"; };
+		A0000000000000000000001a /* TcpConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TcpConnection.swift"; sourceTree = "<group>"; };
+		A0000000000000000000001c /* TcpServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TcpServer.swift"; sourceTree = "<group>"; };
+		A0000000000000000000001e /* ByteReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ByteReader.swift"; sourceTree = "<group>"; };
+		A00000000000000000000020 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Constants.swift"; sourceTree = "<group>"; };
+		A00000000000000000000022 /* FrameCodec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FrameCodec.swift"; sourceTree = "<group>"; };
+		A00000000000000000000024 /* JSONValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JSONValue.swift"; sourceTree = "<group>"; };
+		A00000000000000000000026 /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Messages.swift"; sourceTree = "<group>"; };
+		A00000000000000000000028 /* ChatMessageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatMessageStore.swift"; sourceTree = "<group>"; };
+		A0000000000000000000002a /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SettingsStore.swift"; sourceTree = "<group>"; };
+		A0000000000000000000002c /* TransferRecordStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransferRecordStore.swift"; sourceTree = "<group>"; };
+		A0000000000000000000002e /* ChecksumUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChecksumUtil.swift"; sourceTree = "<group>"; };
+		A00000000000000000000030 /* ChunkPlanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChunkPlanner.swift"; sourceTree = "<group>"; };
+		A00000000000000000000032 /* FolderBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FolderBundle.swift"; sourceTree = "<group>"; };
+		A00000000000000000000034 /* PathSanitizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PathSanitizer.swift"; sourceTree = "<group>"; };
+		A00000000000000000000036 /* ReceiveState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReceiveState.swift"; sourceTree = "<group>"; };
+		A00000000000000000000038 /* ResumeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ResumeManager.swift"; sourceTree = "<group>"; };
+		A0000000000000000000003a /* TransferManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransferManager.swift"; sourceTree = "<group>"; };
+		A0000000000000000000003c /* ChatComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatComposer.swift"; sourceTree = "<group>"; };
+		A0000000000000000000003e /* ChatConversationListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatConversationListView.swift"; sourceTree = "<group>"; };
+		A00000000000000000000040 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatView.swift"; sourceTree = "<group>"; };
+		A00000000000000000000042 /* DeviceListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceListView.swift"; sourceTree = "<group>"; };
+		A00000000000000000000044 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SettingsView.swift"; sourceTree = "<group>"; };
+		A00000000000000000000046 /* IncomingRequestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IncomingRequestView.swift"; sourceTree = "<group>"; };
+		A00000000000000000000048 /* TransferView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransferView.swift"; sourceTree = "<group>"; };
+		A0000000000000000000004a /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppState.swift"; sourceTree = "<group>"; };
+		A0000000000000000000004c /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContentView.swift"; sourceTree = "<group>"; };
+		A00000000000000000000005 /* LanTransfer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LanTransfer.app; sourceTree = BUILT_PRODUCTS_DIR;};
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A00000000000000000000008 = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A00000000000000000000002 = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000003 /* LanTransfer */,
+				A00000000000000000000004 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A00000000000000000000003 = {
+			isa = PBXGroup;
+			children = (
+				A0000000000000000000004e /* App */,
+				A0000000000000000000004f /* Core */,
+				A00000000000000000000055 /* Features */,
+				A0000000000000000000005a /* UI */,
+			);
+			path = LanTransfer;
+			sourceTree = "<group>";
+		};
+		A0000000000000000000004e = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000010 /* LanTransferApp.swift in Sources */,
+			);
+			path = "App";
+			sourceTree = "<group>";
+		};
+		A0000000000000000000004f = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000050 /* Chat */,
+				A00000000000000000000051 /* Network */,
+				A00000000000000000000052 /* Protocol */,
+				A00000000000000000000053 /* Storage */,
+				A00000000000000000000054 /* Transfer */,
+			);
+			path = "Core";
+			sourceTree = "<group>";
+		};
+		A00000000000000000000050 = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000012 /* ChatChannel.swift in Sources */,
+				A00000000000000000000014 /* ChatManager.swift in Sources */,
+			);
+			path = "Chat";
+			sourceTree = "<group>";
+		};
+		A00000000000000000000051 = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000016 /* DeviceRegistry.swift in Sources */,
+				A00000000000000000000018 /* DiscoveryManager.swift in Sources */,
+				A0000000000000000000001a /* TcpConnection.swift in Sources */,
+				A0000000000000000000001c /* TcpServer.swift in Sources */,
+			);
+			path = "Network";
+			sourceTree = "<group>";
+		};
+		A00000000000000000000052 = {
+			isa = PBXGroup;
+			children = (
+				A0000000000000000000001e /* ByteReader.swift in Sources */,
+				A00000000000000000000020 /* Constants.swift in Sources */,
+				A00000000000000000000022 /* FrameCodec.swift in Sources */,
+				A00000000000000000000024 /* JSONValue.swift in Sources */,
+				A00000000000000000000026 /* Messages.swift in Sources */,
+			);
+			path = "Protocol";
+			sourceTree = "<group>";
+		};
+		A00000000000000000000053 = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000028 /* ChatMessageStore.swift in Sources */,
+				A0000000000000000000002a /* SettingsStore.swift in Sources */,
+				A0000000000000000000002c /* TransferRecordStore.swift in Sources */,
+			);
+			path = "Storage";
+			sourceTree = "<group>";
+		};
+		A00000000000000000000054 = {
+			isa = PBXGroup;
+			children = (
+				A0000000000000000000002e /* ChecksumUtil.swift in Sources */,
+				A00000000000000000000030 /* ChunkPlanner.swift in Sources */,
+				A00000000000000000000032 /* FolderBundle.swift in Sources */,
+				A00000000000000000000034 /* PathSanitizer.swift in Sources */,
+				A00000000000000000000036 /* ReceiveState.swift in Sources */,
+				A00000000000000000000038 /* ResumeManager.swift in Sources */,
+				A0000000000000000000003a /* TransferManager.swift in Sources */,
+			);
+			path = "Transfer";
+			sourceTree = "<group>";
+		};
+		A00000000000000000000055 = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000056 /* Chat */,
+				A00000000000000000000057 /* Devices */,
+				A00000000000000000000058 /* Settings */,
+				A00000000000000000000059 /* Transfer */,
+			);
+			path = "Features";
+			sourceTree = "<group>";
+		};
+		A00000000000000000000056 = {
+			isa = PBXGroup;
+			children = (
+				A0000000000000000000003c /* ChatComposer.swift in Sources */,
+				A0000000000000000000003e /* ChatConversationListView.swift in Sources */,
+				A00000000000000000000040 /* ChatView.swift in Sources */,
+			);
+			path = "Chat";
+			sourceTree = "<group>";
+		};
+		A00000000000000000000057 = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000042 /* DeviceListView.swift in Sources */,
+			);
+			path = "Devices";
+			sourceTree = "<group>";
+		};
+		A00000000000000000000058 = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000044 /* SettingsView.swift in Sources */,
+			);
+			path = "Settings";
+			sourceTree = "<group>";
+		};
+		A00000000000000000000059 = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000046 /* IncomingRequestView.swift in Sources */,
+				A00000000000000000000048 /* TransferView.swift in Sources */,
+			);
+			path = "Transfer";
+			sourceTree = "<group>";
+		};
+		A0000000000000000000005a = {
+			isa = PBXGroup;
+			children = (
+				A0000000000000000000004a /* AppState.swift in Sources */,
+				A0000000000000000000004c /* ContentView.swift in Sources */,
+			);
+			path = "UI";
+			sourceTree = "<group>";
+		};
+		A00000000000000000000004 = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000005 /* LanTransfer.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A00000000000000000000006 /* LanTransfer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A0000000000000000000000b /* Build configuration list for PBXNativeTarget "LanTransfer" */;
+			buildPhases = (
+				A00000000000000000000007 /* Sources */,
+				A00000000000000000000008 /* Frameworks */,
+				A00000000000000000000009 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LanTransfer;
+			productName = LanTransfer;
+			productReference = A00000000000000000000005 /* LanTransfer.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A00000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					A00000000000000000000006 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = A0000000000000000000000a /* Build configuration list for PBXProject "LanTransfer" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				"zh-Hans",
+			);
+			mainGroup = A00000000000000000000002;
+			productRefGroup = A00000000000000000000004 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A00000000000000000000006 /* LanTransfer */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A00000000000000000000009 = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A00000000000000000000007 = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A00000000000000000000011 /* LanTransferApp.swift in Sources */,
+				A00000000000000000000013 /* ChatChannel.swift in Sources */,
+				A00000000000000000000015 /* ChatManager.swift in Sources */,
+				A00000000000000000000017 /* DeviceRegistry.swift in Sources */,
+				A00000000000000000000019 /* DiscoveryManager.swift in Sources */,
+				A0000000000000000000001b /* TcpConnection.swift in Sources */,
+				A0000000000000000000001d /* TcpServer.swift in Sources */,
+				A0000000000000000000001f /* ByteReader.swift in Sources */,
+				A00000000000000000000021 /* Constants.swift in Sources */,
+				A00000000000000000000023 /* FrameCodec.swift in Sources */,
+				A00000000000000000000025 /* JSONValue.swift in Sources */,
+				A00000000000000000000027 /* Messages.swift in Sources */,
+				A00000000000000000000029 /* ChatMessageStore.swift in Sources */,
+				A0000000000000000000002b /* SettingsStore.swift in Sources */,
+				A0000000000000000000002d /* TransferRecordStore.swift in Sources */,
+				A0000000000000000000002f /* ChecksumUtil.swift in Sources */,
+				A00000000000000000000031 /* ChunkPlanner.swift in Sources */,
+				A00000000000000000000033 /* FolderBundle.swift in Sources */,
+				A00000000000000000000035 /* PathSanitizer.swift in Sources */,
+				A00000000000000000000037 /* ReceiveState.swift in Sources */,
+				A00000000000000000000039 /* ResumeManager.swift in Sources */,
+				A0000000000000000000003b /* TransferManager.swift in Sources */,
+				A0000000000000000000003d /* ChatComposer.swift in Sources */,
+				A0000000000000000000003f /* ChatConversationListView.swift in Sources */,
+				A00000000000000000000041 /* ChatView.swift in Sources */,
+				A00000000000000000000043 /* DeviceListView.swift in Sources */,
+				A00000000000000000000045 /* SettingsView.swift in Sources */,
+				A00000000000000000000047 /* IncomingRequestView.swift in Sources */,
+				A00000000000000000000049 /* TransferView.swift in Sources */,
+				A0000000000000000000004b /* AppState.swift in Sources */,
+				A0000000000000000000004d /* ContentView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A0000000000000000000000c /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_BITCODE = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				CODE_SIGN_STYLE = Automatic;
+			};
+			name = Debug;
+		};
+		A0000000000000000000000d /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_BITCODE = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				CODE_SIGN_STYLE = Automatic;
+			};
+			name = Release;
+		};
+		A0000000000000000000000e /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = LanTransfer/Info.plist;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lantransfer.ios;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+			};
+			name = Debug;
+		};
+		A0000000000000000000000f /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = LanTransfer/Info.plist;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lantransfer.ios;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A0000000000000000000000a /* Build configuration list for PBXProject "LanTransfer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A0000000000000000000000c /* Debug */,
+				A0000000000000000000000d /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A0000000000000000000000b /* Build configuration list for PBXNativeTarget "LanTransfer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A0000000000000000000000e /* Debug */,
+				A0000000000000000000000f /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = A00000000000000000000001 /* Project object */;
+}

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  xcodebuild -exportArchive 的导出配置文件。
+
+  重要：当前 codemagic.yaml 的方案是「归档后手动 zip Payload」生成未签名 IPA，
+  全程【不使用】本文件。它在此保留，仅为兼容以下场景：
+    - 你日后在 Mac 本地或 Codemagic 上配置了签名证书与描述文件，想改用
+      xcodebuild -exportArchive 导出 Development 签名包时使用。
+  本方案（未签名 IPA + 全能签重签）无需填写 teamID、provisioningProfiles，
+  也不需要 destination=upload（那是上传 App Store / TestFlight 才用的）。
+-->
+<plist version="1.0">
+<dict>
+    <!-- development：Development 分发方式；未签名场景不依赖 App Store 分发 -->
+    <key>method</key>
+    <string>development</string>
+
+    <!-- 上传符号表，便于排查崩溃（手动 zip 方案不读取此项） -->
+    <key>uploadSymbols</key>
+    <true/>
+
+    <!-- iOS 已不再支持 bitcode，关闭即可 -->
+    <key>compileBitcode</key>
+    <false/>
+</dict>
+</plist>
