@@ -38,7 +38,7 @@ final class ChatChannel {
         let link = try await connectTcp(
             host: peer.ip, port: UInt16(peer.tcpPort > 0 ? peer.tcpPort : Int(TCP_PORT)),
             channel: .control, purpose: "chat",
-            features: ["CHAT"], deviceId: selfDevice.deviceId
+            deviceId: selfDevice.deviceId, features: ["CHAT"]
         )
         connections[peer.deviceId] = link
         // 启动接收循环。

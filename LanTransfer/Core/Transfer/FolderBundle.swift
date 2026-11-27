@@ -277,7 +277,7 @@ enum FolderBundle {
                 throw FolderBundleError.invalid("包内文件校验失败：\(entry.path)")
             }
         }
-        return ExtractedBundle(folderURL: folderURL, fileCount: manifest.files.count)
+        return ExtractedBundle(folderPath: folderURL, fileCount: manifest.files.count)
     }
 
     // MARK: - 工具

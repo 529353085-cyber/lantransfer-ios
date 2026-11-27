@@ -48,7 +48,7 @@ final class DiscoveryManager: NSObject {
         publishedService = nil
         browser?.stop()
         browser = nil
-        resolvingServices.forEach { $0.stopResolving() }
+        resolvingServices.forEach { $0.stop() }
         resolvingServices.removeAll()
         udpListener?.cancel()
         udpListener = nil
@@ -191,7 +191,8 @@ final class DiscoveryManager: NSObject {
         var addrIn = sockaddr.pointee
         let result = withUnsafePointer(to: &addrIn) { ptr in
             ptr.withMemoryRebound(to: sockaddr_in.self, capacity: 1) { sin in
-                inet_ntop(AF_INET, &sin.pointee.sin_addr, &buffer, socklen_t(INET_ADDRSTRLEN))
+                var sinAddr = sin.pointee.sin_addr
+                return inet_ntop(AF_INET, &sinAddr, &buffer, socklen_t(INET_ADDRSTRLEN))
             }
         }
         return result == nil ? nil : String(cString: buffer)
@@ -236,7 +237,7 @@ extension DiscoveryManager: NetServiceBrowserDelegate {
 
     func netServiceBrowser(_ browser: NetServiceBrowser, didRemove service: NetService, moreComing: Bool) {
         resolvingServices.remove(service)
-        service.stopResolving()
+        service.stop()
     }
 
     func netServiceBrowserWillSearch(_ browser: NetServiceBrowser) {}
@@ -249,10 +250,10 @@ extension DiscoveryManager: NetServiceBrowserDelegate {
 extension DiscoveryManager: NetServiceDelegate {
     func netServiceDidResolveAddress(_ sender: NetService) {
         defer {
-            sender.stopResolving()
+            sender.stop()
             resolvingServices.remove(sender)
         }
-       guard let txt = sender.txtRecordData(),
+        guard let txt = sender.txtRecordData(),
               let infoData = NetService.dictionary(fromTXTRecord: txt)["info"],
               let info = try? JSONDecoder().decode(MdnsDeviceInfo.self, from: infoData),
               info.deviceId != selfDevice.deviceId else { return }
