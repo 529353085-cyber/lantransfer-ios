@@ -252,9 +252,8 @@ extension DiscoveryManager: NetServiceDelegate {
             sender.stopResolving()
             resolvingServices.remove(sender)
         }
-        guard let txt = sender.txtRecordData(),
-              let dict = NetService.dictionary(fromTXTRecord: txt),
-              let infoData = dict["info"],
+       guard let txt = sender.txtRecordData(),
+              let infoData = NetService.dictionary(fromTXTRecord: txt)["info"],
               let info = try? JSONDecoder().decode(MdnsDeviceInfo.self, from: infoData),
               info.deviceId != selfDevice.deviceId else { return }
 
