@@ -77,7 +77,7 @@ struct DeviceListView: View {
                         EmptyStateView(
                             systemImage: "radio",
                             title: "未发现设备",
-                            message: "请确保对方设备在同一局域网内并已打开本应用，然后点击右上角刷新"
+                            message: "请确保 iPhone 与对方在同一 WiFi、系统设置中已允许本应用的「本地网络」权限，然后点击右上角刷新"
                         )
                         .frame(maxWidth: .infinity)
                     } else {

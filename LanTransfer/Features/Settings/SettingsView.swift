@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct SettingsView: View {
     @EnvironmentObject var appState: AppState
@@ -20,6 +21,7 @@ struct SettingsView: View {
             Form {
                 Section("设备") {
                     TextField("设备别名", text: $draft.deviceAlias)
+                        .onSubmit { hideKeyboard() }
                     Text("对方设备列表中将显示此别名")
                         .font(.caption)
                         .foregroundStyle(.secondary)
@@ -40,6 +42,13 @@ struct SettingsView: View {
                               value: $draft.speedLimitKBps,
                               format: .number)
                         .keyboardType(.numberPad)
+                        // 数字键盘没有 return 键，必须用键盘工具栏提供「完成」出口。
+                        .toolbar {
+                            ToolbarItem(placement: .keyboard) {
+                                Button("完成") { hideKeyboard() }
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
+                            }
+                        }
                 }
 
                 Section("聊天") {
@@ -69,6 +78,8 @@ struct SettingsView: View {
                     PromoSloganView()
                 }
             }
+            // 滚动列表时可交互式收起键盘；数字键盘另有工具栏「完成」按钮。
+            .scrollDismissesKeyboard(.interactively)
             .navigationTitle("设置")
             .onAppear {
                 draft = appState.settings
@@ -77,5 +88,13 @@ struct SettingsView: View {
                 Button("好", role: .cancel) {}
             }
         }
+    }
+
+    /// 收起当前第一响应者（键盘）。数字键盘无 return 键时必须由工具栏按钮触发。
+    private func hideKeyboard() {
+        UIApplication.shared.sendAction(
+            #selector(UIResponder.resignFirstResponder),
+            to: nil, from: nil, for: nil
+        )
     }
 }

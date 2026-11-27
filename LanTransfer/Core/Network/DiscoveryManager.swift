@@ -27,6 +27,9 @@ final class DiscoveryManager: NSObject {
     private var udpListener: NWListener?
     private let udpQueue = DispatchQueue(label: "com.lantransfer.udp", qos: .utility)
     private var udpTimer: Timer?
+    /// NetService / NetServiceBrowser 要求 Bonjour 类型以点结尾（如 _http._tcp.）。
+    /// Info.plist 的 NSBonjourServices 仍声明不带点的 _lantransfer._tcp（Apple 规定格式）。
+    private let bonjourType = SERVICE_TYPE + "."
 
     init(selfDevice: Device, registry: DeviceRegistry) {
         self.selfDevice = selfDevice
@@ -34,13 +37,26 @@ final class DiscoveryManager: NSObject {
     }
 
     /// 启动发现（Bonjour 发布 + 浏览 + UDP 监听）。
+    /// 可重复调用：先清理旧通道，避免定时器与 NWListener 叠加。
     func start() {
+        stop()
         publishBonjour()
         browseBonjour()
         startUdpListen()
         udpTimer = Timer.scheduledTimer(withTimeInterval: Double(DISCOVER_INTERVAL_MS) / 1000.0, repeats: true) { [weak self] _ in
             self?.announceUdp()
         }
+    }
+
+    /// iOS 14+ 本地网络权限变化后，旧的浏览器/发布器/监听器不会自动恢复，必须重建。
+    func restart() {
+        start()
+    }
+
+    /// 用户手动刷新：重建全部发现通道并立刻广播一次宣告。
+    func refresh() {
+        restart()
+        announceUdp()
     }
 
     func stop() {
@@ -75,7 +91,7 @@ final class DiscoveryManager: NSObject {
     private func publishBonjour() {
         let service = NetService(
             domain: "local.",
-            type: SERVICE_TYPE,
+            type: bonjourType,
             name: selfDevice.deviceId,
             port: Int32(TCP_PORT)
         )
@@ -87,7 +103,7 @@ final class DiscoveryManager: NSObject {
     private func browseBonjour() {
         let b = NetServiceBrowser()
         b.delegate = self
-        b.searchForServices(ofType: SERVICE_TYPE, inDomain: "local.")
+        b.searchForServices(ofType: bonjourType, inDomain: "local.")
         browser = b
     }
 
@@ -98,6 +114,11 @@ final class DiscoveryManager: NSObject {
         params.allowLocalEndpointReuse = true
         do {
             let listener = try NWListener(using: params, on: NWEndpoint.Port(rawValue: UDP_DISCOVERY_PORT)!)
+            listener.stateUpdateHandler = { [weak self] state in
+                if case .failed(let error) = state {
+                    self?.logger.error("UDP 监听失败: \(error.localizedDescription)")
+                }
+            }
             listener.newConnectionHandler = { [weak self] connection in
                 guard let self else { return }
                 connection.receive(minimumIncompleteLength: 1, maximumLength: BUFFER_SIZE) { data, _, _, _ in
@@ -174,10 +195,16 @@ final class DiscoveryManager: NSObject {
             }
             ptr = current.pointee.ifa_next
         }
-        // 优先 192.168.x，排除回环。
+        // 排除回环、APIPA（169.254.x 不可跨设备路由）、/32 主机路由与全零掩码，
+        // 否则蜂窝数据/虚拟网卡可能被选中，算出「广播地址 == 自身 IP」导致宣告永不投递。
         let lan = addresses
-            .filter { !$0.ip.hasPrefix("127.") }
-            .sorted { $0.ip.hasPrefix("192.168.") && !$1.ip.hasPrefix("192.168.") }
+            .filter { !$0.ip.hasPrefix("127.") && !$0.ip.hasPrefix("169.254.") }
+            .filter { entry in
+                let m = entry.mask.split(separator: ".").compactMap { Int($0) }
+                guard m.count == 4 else { return false }
+                return m != [255, 255, 255, 255] && m != [0, 0, 0, 0]
+            }
+            .sorted { left, right in lanPriority(left.ip) < lanPriority(right.ip) }
         guard let first = lan.first else { return nil }
         let ipParts = first.ip.split(separator: ".").compactMap { Int($0) }
         let maskParts = first.mask.split(separator: ".").compactMap { Int($0) }
@@ -218,6 +245,14 @@ final class DiscoveryManager: NSObject {
         }
     }
 
+    /// LAN 地址优先级：192.168.x > 10.x > 172.16-31.x > 其他。
+    private func lanPriority(_ ip: String) -> Int {
+        if ip.hasPrefix("192.168.") { return 0 }
+        if ip.hasPrefix("10.") { return 1 }
+        if ip.hasPrefix("172.") { return 2 }
+        return 3
+    }
+
     private func isUsablePeerIp(_ ip: String) -> Bool {
         if ip.isEmpty || ip == "0.0.0.0" || ip == "::" || ip == "::1" { return false }
         if ip.hasPrefix("127.") || ip.hasPrefix("169.254.") { return false }
@@ -254,8 +289,11 @@ extension DiscoveryManager: NetServiceDelegate {
             resolvingServices.remove(sender)
         }
         guard let txt = sender.txtRecordData(),
-              let infoData = NetService.dictionary(fromTXTRecord: txt)["info"],
-              let info = try? JSONDecoder().decode(MdnsDeviceInfo.self, from: infoData),
+              let infoValue = NetService.dictionary(fromTXTRecord: txt)["info"] else { return }
+        // TXT 的 info 值是 base64(UTF8 JSON)，必须先 base64 解码再交给 JSONDecoder；
+        // 直接把 base64 字符串当 JSON 解析会恒定失败，导致解析出的设备被丢弃。
+        let jsonData = Data(base64Encoded: infoValue) ?? infoValue
+        guard let info = try? JSONDecoder().decode(MdnsDeviceInfo.self, from: jsonData),
               info.deviceId != selfDevice.deviceId else { return }
 
         // 从 Bonjour 解析出的地址优先取 IPv4。

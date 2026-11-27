@@ -127,8 +127,6 @@ final class AppState: ObservableObject {
 
     private func startServices() {
         registry.start()
-        discovery.start()
-        isDiscovering = true
         // 聊天连接入口：接收端 purpose=chat 的连接交给 ChatChannel。
         transferManager.onChatConnection = { [weak self] link in
             self?.chatChannel.handleIncoming(link)
@@ -146,6 +144,12 @@ final class AppState: ObservableObject {
                 )
             }
         }
+        // TCP 监听就绪后再对外宣告，避免对端发现后立刻建连被拒。
+        // 首次启动即处于「本地网络权限未决定」状态；授权弹窗结束后由
+        // handleAppActive() / refreshDevices() 重建发现通道。
+        discovery.start()
+        isDiscovering = true
+        scheduleEarlyDiscoveryRetries()
         records = recordStore.all
         for device in registry.devices {
             chatManager.registerPeer(id: device.deviceId, name: device.displayName)
@@ -190,9 +194,33 @@ final class AppState: ObservableObject {
     }
 
     func refreshDevices() {
+        // 重建 Bonjour 发布/浏览与 UDP 监听，并立刻广播一次宣告。
+        // 用户在系统「本地网络」弹窗点允许后再点刷新即可恢复发现。
+        discovery.refresh()
         isDiscovering = true
-        // Bonjour 浏览是持续性的；这里主动发一次 UDP 宣告，加快互相发现。
-        // DiscoveryManager 内部定时器已周期广播，此处仅更新 UI 状态。
+    }
+
+    /// 本地网络权限弹窗消失时，不同 iOS 版本并不保证触发 scenePhase 变化。
+    /// 首次启动做两次有界延迟重建，覆盖用户点「允许」的时间窗；
+    /// 之后还有 scenePhase 回前台与 ContentView.onAppear 两条触发路径。
+    private func scheduleEarlyDiscoveryRetries() {
+        for delay in [2.0, 6.0] {
+            Task { @MainActor [weak self] in
+                try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                self?.discovery.restart()
+            }
+        }
+    }
+
+    /// App 回到前台（含本地网络权限弹窗结束）时重建发现通道。
+    /// iOS 14+ 权限从「未决定」变为「允许」后，之前创建的 NetServiceBrowser /
+    /// NetService / NWListener 不会自动恢复，必须重新创建，否则永久搜不到设备。
+    func handleAppActive() {
+        discovery.restart()
+        isDiscovering = true
+        for device in registry.devices {
+            chatManager.registerPeer(id: device.deviceId, name: device.displayName)
+        }
     }
 
     func updateSettings(_ s: Settings) {
