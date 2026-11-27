@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Foundation
+import UIKit
 
 struct TransferView: View {
     @EnvironmentObject var appState: AppState
@@ -42,6 +43,26 @@ struct TransferView: View {
                         }
                     }
                 }
+            }
+            .alert("无法打开系统「文件」App", isPresented: Binding(
+                get: { appState.folderOpenFailedPath != nil },
+                set: { if !$0 { appState.folderOpenFailedPath = nil } }
+            )) {
+                Button("打开「文件」App") {
+                    if let url = URL(string: "shareddocuments://") {
+                        UIApplication.shared.open(url)
+                    }
+                    appState.folderOpenFailedPath = nil
+                }
+                Button("改为预览文件") {
+                    if let path = appState.folderOpenFailedPath { appState.openFile(path) }
+                    appState.folderOpenFailedPath = nil
+                }
+                Button("取消", role: .cancel) {
+                    appState.folderOpenFailedPath = nil
+                }
+            } message: {
+                Text("请到「文件」→「我的 iPhone」→「局域网快传」查看接收目录，或改为预览该文件。")
             }
         }
     }
@@ -137,8 +158,8 @@ struct TransferView: View {
 
                             Spacer()
 
-                            Button("打开") {
-                                appState.openFile(record.localPath)
+                            Button(record.mime == "application/x-lantransfer-folder" ? "打开文件夹" : "所在文件夹") {
+                                appState.openContainingFolder(record.localPath, mime: record.mime)
                             }
                             .buttonStyle(.bordered)
                             .font(.caption)

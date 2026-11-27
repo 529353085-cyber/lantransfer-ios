@@ -25,6 +25,9 @@ final class AppState: ObservableObject {
     }
     @Published var isDiscovering: Bool = false
 
+    /// 系统「文件」App 打开失败时的兜底提示；原路径保留供“预览文件”使用。
+    @Published var folderOpenFailedPath: String? = nil
+
     @Published var conversations: [ConversationSummary] = []
     @Published var chatMessages: [ChatMessage] = []
     @Published var activeConversationId: String? = nil
@@ -190,6 +193,35 @@ final class AppState: ObservableObject {
         interaction.delegate = DocumentInteractionDelegate.shared
         if let view = vc?.view {
             interaction.presentOpenInMenu(from: CGRect(x: 0, y: 0, width: 1, height: 1), in: view, animated: true)
+        }
+    }
+
+    /// 传输记录「打开」入口：普通文件在「文件」App 中定位到所在目录，文件夹整包直接打开该文件夹。
+    /// App 已开启 UIFileSharingEnabled，Documents 目录在「文件」→「我的 iPhone」→「局域网快传」可见。
+    func openContainingFolder(_ path: String, mime: String = "") {
+        guard !path.isEmpty else { return }
+        let fileURL = URL(fileURLWithPath: path)
+        var isDirectory: ObjCBool = false
+        let exists = FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory)
+        let openItself = mime == "application/x-lantransfer-folder" || (exists && isDirectory.boolValue)
+        let targetURL = openItself ? fileURL : fileURL.deletingLastPathComponent()
+        guard FileManager.default.fileExists(atPath: targetURL.path) else { return }
+
+        // shareddocuments://<沙盒绝对路径> 会让系统「文件」App 打开指定目录（非预览文件本身）。
+        guard var components = URLComponents(url: targetURL, resolvingAgainstBaseURL: false) else {
+            folderOpenFailedPath = path
+            return
+        }
+        components.scheme = "shareddocuments"
+        guard let folderURL = components.url else {
+            folderOpenFailedPath = path
+            return
+        }
+        UIApplication.shared.open(folderURL, options: [:]) { [weak self] success in
+            guard !success else { return }
+            Task { @MainActor [weak self] in
+                self?.folderOpenFailedPath = path
+            }
         }
     }
 
