@@ -17,7 +17,7 @@ enum JSONValue: Codable, Equatable {
     case array([JSONValue])
     case object([String: JSONValue])
 
-    init(encodable value: some Encodable) throws {
+    init<T: Encodable>(encodable value: T) throws {
         let data = try ProtocolJson.encoder.encode(value)
         self = try JSONDecoder().decode(JSONValue.self, from: data)
     }

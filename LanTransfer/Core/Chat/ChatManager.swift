@@ -121,7 +121,7 @@ final class ChatManager: ObservableObject {
         lock.lock()
         let pending = pendingImagePaths.removeValue(forKey: payload.msgId)
         lock.unlock()
-        if let pending {
+        if let pending = pending {
             update(msgId: payload.msgId) { item in
                 item.imagePath = pending.1
                 item.transferId = pending.0

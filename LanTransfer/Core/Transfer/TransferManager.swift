@@ -47,7 +47,7 @@ final class TransferManager: ObservableObject {
     /// 聊天连接回调（由 AppState 装配 ChatChannel.handleIncoming）。
     var onChatConnection: ((TcpConnection) -> Void)?
 
-    func startServer(chatHandler: (@escaping (TcpConnection) -> Void)? = nil) throws {
+    func startServer(chatHandler: ((TcpConnection) -> Void)? = nil) throws {
         server.onControl = { [weak self] link in
             Task { await self?.handleControl(link) }
         }

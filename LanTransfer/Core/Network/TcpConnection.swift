@@ -13,7 +13,9 @@ import Network
 final class TcpConnection {
     let connection: NWConnection
     let reader = ByteReader()
-    let hello: HelloPayload?
+    /// 握手时写入的 HELLO 载荷（服务端被动连接由 TcpServer.handshake 回填）。
+    /// 必须在回调 onData/onChat/onControl 之前赋值，保证接收侧按 deviceId/channel 分流。
+    var hello: HelloPayload?
     private let queue = DispatchQueue(label: "com.lantransfer.tcp", qos: .userInitiated)
     private let lock = NSLock()
     private var closed = false

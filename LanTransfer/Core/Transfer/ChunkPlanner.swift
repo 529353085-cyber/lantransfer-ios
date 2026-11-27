@@ -42,7 +42,7 @@ enum ChunkPlanner {
     }
 
     /// 返回尚未完成的块索引（升序）。
-    static func missingChunks(done: some Sequence<Int>, total: Int) -> [Int] {
+    static func missingChunks<S: Sequence>(done: S, total: Int) -> [Int] where S.Element == Int {
         let doneSet = Set(done)
         return (0..<total).filter { !doneSet.contains($0) }
     }

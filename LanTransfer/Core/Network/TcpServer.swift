@@ -66,6 +66,9 @@ final class TcpServer {
             guard hello.channel == .control || hello.channel == .data else {
                 throw FrameError.invalidFrame("HELLO 缺少合法 channel")
             }
+            // 回填到连接对象：接收侧 handleDataConnection / beginReceive 依赖
+            // link.hello 取 channel、transferId、fileId、chunkIndex 与对端 deviceId。
+            link.hello = hello
             // 回 HELLO_ACK。
             try await link.sendMessage(.helloAck, HelloAckPayload(ok: true))
             if hello.channel == .data {
