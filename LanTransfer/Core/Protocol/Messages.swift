@@ -1,6 +1,6 @@
 //
 //  Messages.swift
-//  局域网快传
+//  章鱼快传
 //
 //  控制层消息信封、跨端共享领域模型与编解码。
 //  字段与 desktop/core/protocol/messages.ts、Android Messages.kt 逐一对齐。

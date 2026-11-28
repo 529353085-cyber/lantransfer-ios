@@ -1,6 +1,6 @@
 //
 //  ChatChannel.swift
-//  局域网快传
+//  章鱼快传
 //
 //  聊天连接管理：每条会话一条 purpose='chat' 的控制连接，复用 HELLO/信封帧。
 //  与桌面 ChatChannel.ts / Android ChatManager 的聊天连接语义对齐：

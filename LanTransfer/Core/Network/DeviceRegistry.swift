@@ -1,6 +1,6 @@
 //
 //  DeviceRegistry.swift
-//  局域网快传
+//  章鱼快传
 //
 //  在线设备注册表：upsert / 别名 / 超时剔除，是 UI 设备列表的唯一数据源。
 //  与桌面 DeviceRegistry.ts / Android DeviceRegistry.kt 对齐。

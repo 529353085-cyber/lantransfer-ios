@@ -1,6 +1,6 @@
 //
 //  TransferManager.swift
-//  局域网快传
+//  章鱼快传
 //
 //  传输状态机（核心）：发送方主动连接接收方，控制连接走 HELLO→REQUEST→ACCEPT→
 //  RESUME→PLAN→VERIFY→COMPLETE，数据块走每块独占的数据连接（20B 头 + 裸流）。

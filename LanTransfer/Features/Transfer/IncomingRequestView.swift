@@ -1,6 +1,6 @@
 //
 //  IncomingRequestView.swift
-//  局域网快传
+//  章鱼快传
 //
 //  接收请求确认弹窗，由 ContentView 根据 appState.incoming 以覆盖层显示。
 //

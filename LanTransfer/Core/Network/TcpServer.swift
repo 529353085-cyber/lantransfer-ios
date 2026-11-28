@@ -1,6 +1,6 @@
 //
 //  TcpServer.swift
-//  局域网快传
+//  章鱼快传
 //
 //  TCP 监听服务：控制连接与数据连接共用 45211，靠首帧 HELLO.channel 分流，
 //  先回 HELLO_ACK。与桌面 TcpServer.ts、Android TcpServer.kt 行为一致。

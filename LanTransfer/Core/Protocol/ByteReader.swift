@@ -1,6 +1,6 @@
 //
 //  ByteReader.swift
-//  局域网快传
+//  章鱼快传
 //
 //  字节流读取器：在连接上维护接收缓冲，提供精确读取 n 字节的 async 接口，
 //  解决 TCP 粘包/半包问题。语义与 desktop FrameCodec.ByteReader 一致，

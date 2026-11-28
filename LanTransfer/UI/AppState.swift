@@ -1,6 +1,6 @@
 //
 //  AppState.swift
-//  局域网快传
+//  章鱼快传
 //
 //  全局界面状态容器 + 依赖装配。所有视图通过 @EnvironmentObject 读取状态、调用动作。
 //  这里把 Core 层（发现/传输/聊天/存储）与视图绑定起来。
@@ -211,7 +211,7 @@ final class AppState: ObservableObject {
     }
 
     /// 传输记录「打开」入口：普通文件在「文件」App 中定位到所在目录，文件夹整包直接打开该文件夹。
-    /// App 已开启 UIFileSharingEnabled，Documents 目录在「文件」→「我的 iPhone」→「局域网快传」可见。
+    /// App 已开启 UIFileSharingEnabled，Documents 目录在「文件」→「我的 iPhone」→「章鱼快传」可见。
     func openContainingFolder(_ path: String, mime: String = "") {
         guard !path.isEmpty else { return }
         let fileURL = URL(fileURLWithPath: path)

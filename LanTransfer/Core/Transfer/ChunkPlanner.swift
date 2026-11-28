@@ -1,6 +1,6 @@
 //
 //  ChunkPlanner.swift
-//  局域网快传
+//  章鱼快传
 //
 //  分块计划：把大文件逻辑切分为固定大小块，计算断点续传缺失块。
 //  与 desktop ChunkPlanner.ts / Android ChunkPlanner.kt 逐项对齐。

@@ -1,4 +1,4 @@
-# 局域网快传 — iOS 端
+# 章鱼快传 — iOS 端
 
 基于 SwiftUI 与 Network.framework 的原生 iOS 局域网文件快传应用。与桌面端（Electron/Node）、Android 端（Kotlin）遵循同一套通信协议，可在同一局域网内互相发现、传输文件/图片/文件夹并聊天。
 

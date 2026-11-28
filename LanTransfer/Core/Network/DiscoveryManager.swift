@@ -1,6 +1,6 @@
 //
 //  DiscoveryManager.swift
-//  局域网快传
+//  章鱼快传
 //
 //  设备发现：Bonjour（NetService 发布 + NetServiceBrowser 浏览）为主，
 //  UDP 45210 为辅（监听对端广播；iOS 禁止广播到 255.255.255.255，

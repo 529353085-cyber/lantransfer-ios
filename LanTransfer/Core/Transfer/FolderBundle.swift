@@ -1,6 +1,6 @@
 //
 //  FolderBundle.swift
-//  局域网快传
+//  章鱼快传
 //
 //  LFTB1 文件夹整包：把所选文件夹作为「一个文件」送过既有分块/校验状态机，
 //  接收端校验通过后一次性解包为原目录树。与桌面 FolderBundle.ts / Android FolderBundle.kt 一致。

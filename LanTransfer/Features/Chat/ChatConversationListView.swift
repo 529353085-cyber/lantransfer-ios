@@ -1,6 +1,6 @@
 //
 //  ChatConversationListView.swift
-//  局域网快传
+//  章鱼快传
 //
 //  会话列表：显示对方名称、最后一条消息、时间与未读角标。
 //

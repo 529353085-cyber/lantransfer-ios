@@ -1,6 +1,6 @@
 //
 //  LanTransferApp.swift
-//  局域网快传
+//  章鱼快传
 //
 //  应用入口。创建全局 AppState 并注入到视图层级。
 //

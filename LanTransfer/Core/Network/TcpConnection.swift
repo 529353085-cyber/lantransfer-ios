@@ -1,6 +1,6 @@
 //
 //  TcpConnection.swift
-//  局域网快传
+//  章鱼快传
 //
 //  TCP 连接封装：基于 Network.framework 的 NWConnection，把回调式接收数据
 //  喂给 ByteReader，提供 async 的帧读写接口。控制连接与数据连接共用此类。

@@ -1,6 +1,6 @@
 //
 //  PathSanitizer.swift
-//  局域网快传
+//  章鱼快传
 //
 //  文件名 / 相对路径清洗 —— 对齐桌面 SaveDirResolver.sanitizeFileName 与
 //  FolderSource.sanitizeRelativePath，防止路径穿越。iOS 沙盒下同样必须校验，

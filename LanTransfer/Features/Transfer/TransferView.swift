@@ -1,6 +1,6 @@
 //
 //  TransferView.swift
-//  局域网快传
+//  章鱼快传
 //
 //  进行中任务与历史传输记录。
 //
@@ -62,7 +62,7 @@ struct TransferView: View {
                     appState.folderOpenFailedPath = nil
                 }
             } message: {
-                Text("请到「文件」→「我的 iPhone」→「局域网快传」查看接收目录，或改为预览该文件。")
+                Text("请到「文件」→「我的 iPhone」→「章鱼快传」查看接收目录，或改为预览该文件。")
             }
         }
     }

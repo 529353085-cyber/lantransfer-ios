@@ -1,6 +1,6 @@
 //
 //  ChatManager.swift
-//  局域网快传
+//  章鱼快传
 //
 //  局域网聊天：文本 / 图片消息的发送、接收、已读回执、会话管理与持久化。
 //  协议 v1 纯追加：CHAT_MESSAGE / CHAT_IMAGE / CHAT_ACK 三类消息，

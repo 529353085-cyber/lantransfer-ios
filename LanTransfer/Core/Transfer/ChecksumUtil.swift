@@ -1,6 +1,6 @@
 //
 //  ChecksumUtil.swift
-//  局域网快传
+//  章鱼快传
 //
 //  完整性校验：文件级 SHA-256（CryptoKit）与块级 CRC32（IEEE 802.3）。
 //  CRC32 实现必须与桌面端 slice-by-8 / Android CRC32 逐向量一致：

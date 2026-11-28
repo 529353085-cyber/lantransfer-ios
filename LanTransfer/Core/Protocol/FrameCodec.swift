@@ -1,6 +1,6 @@
 //
 //  FrameCodec.swift
-//  局域网快传
+//  章鱼快传
 //
 //  控制帧（4B 长度前缀 + UTF-8 JSON）与数据帧（20B 定长头 + 裸流）编解码。
 //  与 desktop/core/protocol/FrameCodec.ts、Android FrameCodec.kt 完全一致。

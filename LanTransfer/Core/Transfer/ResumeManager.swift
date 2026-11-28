@@ -1,6 +1,6 @@
 //
 //  ResumeManager.swift
-//  局域网快传
+//  章鱼快传
 //
 //  断点续传位图：记录每个块是否已落盘。格式与三端完全一致：
 //  [4B magic=BIT1][4B chunkSize BE][4B totalChunks BE][totalChunks 字节 0/1]

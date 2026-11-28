@@ -1,6 +1,6 @@
 //
 //  Constants.swift
-//  局域网快传
+//  章鱼快传
 //
 //  跨端共享协议常量 —— 与 shared/protocol/constants.yaml、
 //  desktop/core/protocol/constants.ts、Android ProtocolConstants.kt 逐项对齐。

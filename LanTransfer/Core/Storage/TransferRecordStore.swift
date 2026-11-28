@@ -1,6 +1,6 @@
 //
 //  TransferRecordStore.swift
-//  局域网快传
+//  章鱼快传
 //
 //  传输记录持久化（JSON 文件，位于 App 沙盒 Application Support）。
 //  与桌面 better-sqlite3 / Android Room 的 TransferRecord 字段一致。

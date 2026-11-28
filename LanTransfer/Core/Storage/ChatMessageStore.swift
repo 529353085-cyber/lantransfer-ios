@@ -1,6 +1,6 @@
 //
 //  ChatMessageStore.swift
-//  局域网快传
+//  章鱼快传
 //
 //  聊天消息持久化（JSON 文件）。字段与桌面 ChatMessageRepo / Android ChatMessageDao 对齐。
 //

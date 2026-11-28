@@ -1,6 +1,6 @@
 //
 //  JSONValue.swift
-//  局域网快传
+//  章鱼快传
 //
 //  任意 JSON 值容器。Swift 标准库没有 AnyCodable，而控制层信封的 payload
 //  随 type 变化（20 种），需要一种类型在解码时保留原始 JSON、再按 type 二次解码。

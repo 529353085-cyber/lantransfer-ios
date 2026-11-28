@@ -1,7 +1,7 @@
-# 局域网快传 iOS 版 — TestFlight 构建与分发操作指南
+# 章鱼快传 iOS 版 — TestFlight 构建与分发操作指南
 
 > 适用对象：在中国大陆、没有 Apple Developer 账号、没有 Mac 的开发者。
-> 目标：通过 Codemagic 云构建，把「局域网快传」打包成签名后的 .ipa，上架 TestFlight 供测试员安装。
+> 目标：通过 Codemagic 云构建，把「章鱼快传」打包成签名后的 .ipa，上架 TestFlight 供测试员安装。
 > 全程不需要 Mac；只有「注册账号、填表、上传文件、点按钮」在本地电脑或手机上完成即可。
 
 ---
@@ -10,7 +10,7 @@
 
 ### 0.1 为什么现在装不上
 
-「局域网快传」是原生 iOS 应用，使用 SwiftUI 与 Network.framework 开发。苹果对 iOS 应用的分发有严格管控：
+「章鱼快传」是原生 iOS 应用，使用 SwiftUI 与 Network.framework 开发。苹果对 iOS 应用的分发有严格管控：
 
 - 直接把源码或 .ipa 发给别人，iPhone 是无法安装的。iOS 只接受两类安装来源：App Store，以及 TestFlight。
 - 安装到真机的每一个 App 都必须用苹果签发的「证书」和「描述文件（provisioning profile）」签名。没有签名或签名无效，安装会被拒绝。
@@ -62,7 +62,7 @@
 3. 选择「App IDs」，点「Continue」。
 4. 类型选「App」，点「Continue」。
 5. 填写：
-   - Description（描述）：`局域网快传`，便于自己识别即可。
+   - Description（描述）：`章鱼快传`，便于自己识别即可。
    - Bundle ID：选择「Explicit」，填入 **`com.lantransfer.ios`**。此值必须与工程中的 Bundle Identifier 完全一致，不能多一个字符。
 6. 在 Capabilities（能力）列表中，**不需要为本 App 勾选任何特殊 entitlement**。
    - 说明：本地网络访问不是靠勾选 Capability 实现的，而是靠在工程的 `Info.plist` 中添加 `NSLocalNetworkUsageDescription` 字段（本工程已包含）。用户首次使用时系统会据此弹出授权弹窗。
@@ -201,7 +201,7 @@ Codemagic 需要一个 API Key 来与苹果通信（自动签名、上传 TestFl
 
 1. 测试员在 iPhone 的 App Store 搜索并下载 **TestFlight** App（免费，需非中国大陆区 Apple ID；若 Apple ID 是中国大陆区，可能需要切换到美区或其他区来下载 TestFlight 和获取邀请，这是 TestFlight 的客观限制）。
 2. 打开邀请邮件，点击「View in TestFlight」或按邮件中的兑换码提示操作。
-3. 在 TestFlight 中接受邀请，即可看到「局域网快传」，点「安装」。
+3. 在 TestFlight 中接受邀请，即可看到「章鱼快传」，点「安装」。
 4. 安装后首次启动，系统会弹出「本地网络」权限请求，请点**允许**。
 5. 确保手机与桌面/Android 设备处于**同一 Wi-Fi 局域网**，即可开始互传。
 
@@ -216,7 +216,7 @@ Codemagic 需要一个 API Key 来与苹果通信（自动签名、上传 TestFl
 | `Bundle ID does not match` / 上传被拒 | App ID 的 Bundle ID 与工程不一致 | 确认 Apple Developer 后台创建的 App ID 为 `com.lantransfer.ios`，且与工程 `PRODUCT_BUNDLE_IDENTIFIER` 完全一致。 |
 | 提示描述文件不含设备 / device not registered | 误用了 development/ad_hoc 描述文件 | 上传到 TestFlight 必须用 `app_store` 分发类型；不要在 `ios_signing` 中写 `development`。 |
 | App 装不上或安装后立刻退出 | 签名无效或实体未通过审核 | 在 App Store Connect 查看构建处理状态与审核结果；查阅 Codemagic 构建日志中的签名步骤。 |
-| 首次启动发现不到设备 | 「本地网络」权限被拒绝 | 到 iOS 设置 > 隐私与安全性 > 本地网络，打开「局域网快传」的开关；重启 App。 |
+| 首次启动发现不到设备 | 「本地网络」权限被拒绝 | 到 iOS 设置 > 隐私与安全性 > 本地网络，打开「章鱼快传」的开关；重启 App。 |
 | 传输中途中断 | App 被切到后台或锁屏 | 保持 App 在前台并保持屏幕常亮；iOS 后台传输不可靠。 |
 | 搜不到 UDP 广播设备 | iOS 不支持向 255.255.255.255 广播 | 这是平台限制，请使用 Bonjour（mDNS）发现；确保两端在同一局域网且未开启 AP 隔离。 |
 | 外部测试员收不到邀请 | Beta App Review 未通过，或测试员 Apple ID 区域问题 | 在 App Store Connect 查看审核状态；确认测试员邮箱正确；必要时改用内部测试员。 |

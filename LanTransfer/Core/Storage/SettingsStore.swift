@@ -1,6 +1,6 @@
 //
 //  SettingsStore.swift
-//  局域网快传
+//  章鱼快传
 //
 //  设置持久化（UserDefaults，Codable JSON）。字段与桌面 Settings / Android AppSettings 对齐。
 //
