@@ -41,6 +41,17 @@ struct Device: Codable, Identifiable, Hashable {
 
     /// UI 显示名：别名优先。
     var displayName: String { alias.isEmpty ? deviceName : alias }
+
+    /// 导航路径按 deviceId 判定。lastSeen 每 2 秒变化，若参与哈希，
+    /// navigationDestination 会不断重建详情视图，导致 fileImporter 的 @State
+    /// 被重置、用户点「打开」后选择器直接消失且 completion 不回调。
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(deviceId)
+    }
+
+    static func == (lhs: Device, rhs: Device) -> Bool {
+        lhs.deviceId == rhs.deviceId
+    }
 }
 
 /// 文件元数据（协议载荷）。

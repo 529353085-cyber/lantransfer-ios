@@ -70,6 +70,16 @@ final class TransferManager: ObservableObject {
         chatMsgId: String = "",
         forcedTransferId: String? = nil
     ) async {
+        // 文件选择器返回的 URL 带安全作用域。必须在计算哈希、打包、分块发送的整个
+        // 生命周期内持续持有；旧实现在读取前就 stopAccessing（见原 accessSecurityScoped），
+        // 导致 iCloud Drive / 其他 App 中的文件读失败后被静默丢弃，表现为点「打开」没反应。
+        let scoped = urls.map { (url: $0, active: $0.startAccessingSecurityScopedResource()) }
+        defer {
+            for entry in scoped where entry.active {
+                entry.url.stopAccessingSecurityScopedResource()
+            }
+        }
+
         let cfg = settings()
         var files: [FileMeta] = []
         var tempBundles: [String] = []
@@ -94,8 +104,7 @@ final class TransferManager: ObservableObject {
                     continue
                 }
             } else {
-                guard let url = try? accessSecurityScoped(url),
-                      let sha = try? ChecksumUtil.sha256File(url),
+                guard let sha = try? ChecksumUtil.sha256File(url),
                       let size = try? FileManager.default.attributesOfItem(atPath: url.path)[.size] as? NSNumber else { continue }
                 files.append(FileMeta(
                     fileId: newId(), name: url.lastPathComponent, size: size.int64Value,
@@ -565,12 +574,6 @@ final class TransferManager: ObservableObject {
 
     private func cleanupBundles(_ paths: [String]) {
         for path in paths { try? FileManager.default.removeItem(atPath: path) }
-    }
-
-    private func accessSecurityScoped(_ url: URL) throws -> URL {
-        let got = url.startAccessingSecurityScopedResource()
-        defer { if got { url.stopAccessingSecurityScopedResource() } }
-        return url
     }
 
     private func mimeType(for url: URL) -> String {

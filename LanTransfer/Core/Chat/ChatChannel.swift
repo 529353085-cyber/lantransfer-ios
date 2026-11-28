@@ -90,18 +90,30 @@ final class ChatChannel {
         link.close()
     }
 
-    /// 发送文本消息（先落本地，再上线）。
-    func sendText(_ text: String, to peer: Device) async {
+    /// 发送文本消息（先落本地，再上线）。返回是否成功上线。
+    @discardableResult
+    func sendText(_ text: String, to peer: Device) async -> Bool {
         let payload = chatManager.makeTextMessage(text: text, to: peer.deviceId)
         chatManager.appendOutgoingText(payload)
-        guard let link = try? await connection(to: peer) else { return }
-        try? await link.sendMessage(.chatMessage, payload)
+        guard let link = try? await connection(to: peer) else { return false }
+        do {
+            try await link.sendMessage(.chatMessage, payload)
+            return true
+        } catch {
+            return false
+        }
     }
 
-    /// 发送图片元数据（图片字节由 TransferManager 走文件传输通道）。
-    func sendImageMeta(_ payload: ChatImagePayload, to peer: Device) async {
-        guard let link = try? await connection(to: peer) else { return }
-        try? await link.sendMessage(.chatImage, payload)
+    /// 发送图片元数据（图片字节由 TransferManager 走文件传输通道）。返回是否成功上线。
+    @discardableResult
+    func sendImageMeta(_ payload: ChatImagePayload, to peer: Device) async -> Bool {
+        guard let link = try? await connection(to: peer) else { return false }
+        do {
+            try await link.sendMessage(.chatImage, payload)
+            return true
+        } catch {
+            return false
+        }
     }
 
     /// 打开会话时发送 READ 回执。

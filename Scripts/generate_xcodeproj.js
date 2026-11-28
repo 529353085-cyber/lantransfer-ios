@@ -47,6 +47,8 @@ const IDs = {
   projectRelease: id(),
   targetDebug: id(),
   targetRelease: id(),
+  assetCatalog: id(),
+  assetCatalogBuild: id(),
 };
 
 const fileRefs = {};      // rel -> fileRef id
@@ -102,6 +104,7 @@ pb += '/* Begin PBXBuildFile section */\n';
 for (const rel of swiftFiles) {
   pb += `\t\t${buildFiles[rel]} /* ${path.basename(rel)} in Sources */ = {isa = PBXBuildFile; fileRef = ${fileRefs[rel]} /* ${path.basename(rel)} */; };\n`;
 }
+pb += `\t\t${IDs.assetCatalogBuild} /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ${IDs.assetCatalog} /* Assets.xcassets */; };\n`;
 pb += '/* End PBXBuildFile section */\n\n';
 
 // PBXFileReference
@@ -109,6 +112,7 @@ pb += '/* Begin PBXFileReference section */\n';
 for (const rel of swiftFiles) {
   pb += `\t\t${fileRefs[rel]} /* ${path.basename(rel)} */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "${path.basename(rel)}"; sourceTree = "<group>"; };\n`;
 }
+pb += `\t\t${IDs.assetCatalog} /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };\n`;
 pb += `\t\t${IDs.appProduct} /* LanTransfer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LanTransfer.app; sourceTree = BUILT_PRODUCTS_DIR;};\n`;
 pb += '/* End PBXFileReference section */\n\n';
 
@@ -120,7 +124,7 @@ pb += '/* End PBXFrameworksBuildPhase section */\n\n';
 // PBXGroup
 pb += '/* Begin PBXGroup section */\n';
 pb += `\t\t${IDs.mainGroup} = {\n\t\t\tisa = PBXGroup;\n\t\t\tchildren = (\n\t\t\t\t${IDs.srcGroup} /* LanTransfer */,\n\t\t\t\t${IDs.productsGroup} /* Products */,\n\t\t\t);\n\t\t\tsourceTree = "<group>";\n\t\t};\n`;
-pb += `\t\t${IDs.srcGroup} = {\n\t\t\tisa = PBXGroup;\n\t\t\tchildren = (\n${(groupChildren[IDs.srcGroup] || []).join('\n')}\n\t\t\t);\n\t\t\tpath = LanTransfer;\n\t\t\tsourceTree = "<group>";\n\t\t};\n`;
+pb += `\t\t${IDs.srcGroup} = {\n\t\t\tisa = PBXGroup;\n\t\t\tchildren = (\n${(groupChildren[IDs.srcGroup] || []).join('\n')}\n\t\t\t\t${IDs.assetCatalog} /* Assets.xcassets */,\n\t\t\t);\n\t\t\tpath = LanTransfer;\n\t\t\tsourceTree = "<group>";\n\t\t};\n`;
 for (const d of [...dirs].sort()) {
   const gid = groupNodes[d];
   const name = d.split('/').pop();
@@ -141,7 +145,7 @@ pb += '/* End PBXProject section */\n\n';
 
 // PBXResourcesBuildPhase
 pb += '/* Begin PBXResourcesBuildPhase section */\n';
-pb += `\t\t${IDs.resourcesPhase} = {\n\t\t\tisa = PBXResourcesBuildPhase;\n\t\t\tbuildActionMask = 2147483647;\n\t\t\tfiles = (\n\t\t\t);\n\t\t\trunOnlyForDeploymentPostprocessing = 0;\n\t\t};\n`;
+pb += `\t\t${IDs.resourcesPhase} = {\n\t\t\tisa = PBXResourcesBuildPhase;\n\t\t\tbuildActionMask = 2147483647;\n\t\t\tfiles = (\n\t\t\t\t${IDs.assetCatalogBuild} /* Assets.xcassets in Resources */,\n\t\t\t);\n\t\t\trunOnlyForDeploymentPostprocessing = 0;\n\t\t};\n`;
 pb += '/* End PBXResourcesBuildPhase section */\n\n';
 
 // PBXSourcesBuildPhase
@@ -173,11 +177,12 @@ pb += `\t\t${IDs.projectRelease} /* Release */ = {\n\t\t\tisa = XCBuildConfigura
 
 // XCBuildConfiguration - target
 const targetCommon = [
+  'ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;',
   'CODE_SIGN_STYLE = Automatic;',
-  'CURRENT_PROJECT_VERSION = 1;',
+  'CURRENT_PROJECT_VERSION = 4;',
   'GENERATE_INFOPLIST_FILE = NO;',
   'INFOPLIST_FILE = LanTransfer/Info.plist;',
-  'MARKETING_VERSION = 1.0.0;',
+  'MARKETING_VERSION = 1.0.3;',
   'PRODUCT_BUNDLE_IDENTIFIER = com.lantransfer.ios;',
   'PRODUCT_NAME = "$(TARGET_NAME)";',
   'SWIFT_EMIT_LOC_STRINGS = YES;',

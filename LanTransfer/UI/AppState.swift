@@ -8,6 +8,7 @@
 
 import SwiftUI
 import Combine
+import Network
 import UniformTypeIdentifiers
 import CryptoKit
 
@@ -34,7 +35,7 @@ final class AppState: ObservableObject {
 
     /// 本机设备 id（稳定持久化）。
     let selfDeviceId: String
-    private let selfDevice: Device
+    private var selfDevice: Device
 
     // MARK: - Core 依赖
     private let registry: DeviceRegistry
@@ -45,6 +46,8 @@ final class AppState: ObservableObject {
     private let transferManager: TransferManager
     private let chatChannel: ChatChannel
     private var cancellables = Set<AnyCancellable>()
+    private var probeTimer: Timer?
+    private var isProbing = false
 
     init() {
         // 设备 id 持久化到 UserDefaults，保证重启后不变（会话/记录关联稳定）。
@@ -153,6 +156,7 @@ final class AppState: ObservableObject {
         discovery.start()
         isDiscovering = true
         scheduleEarlyDiscoveryRetries()
+        startLivenessProbe()
         records = recordStore.all
         for device in registry.devices {
             chatManager.registerPeer(id: device.deviceId, name: device.displayName)
@@ -163,11 +167,21 @@ final class AppState: ObservableObject {
 
     /// 视图层 fileImporter 拿到 URL 后回调，发起发送。
     func sendFiles(_ urls: [URL], to device: Device) {
+        guard !device.ip.isEmpty else {
+            sendFailure("对方设备不在线，请到设备页刷新后重试")
+            return
+        }
         chatManager.registerPeer(id: device.deviceId, name: device.displayName)
         Task {
             await transferManager.send(urls: urls, to: device)
             records = recordStore.all
         }
+    }
+
+    private func sendFailure(_ message: String) {
+        notice = CompleteNotice(
+            transferId: newId(), title: "发送失败", message: message, success: false
+        )
     }
 
     func acceptIncoming(_ accept: Bool) {
@@ -228,6 +242,7 @@ final class AppState: ObservableObject {
     func refreshDevices() {
         // 重建 Bonjour 发布/浏览与 UDP 监听，并立刻广播一次宣告。
         // 用户在系统「本地网络」弹窗点允许后再点刷新即可恢复发现。
+        refreshLocalIp()
         discovery.refresh()
         isDiscovering = true
     }
@@ -236,11 +251,68 @@ final class AppState: ObservableObject {
     /// 首次启动做两次有界延迟重建，覆盖用户点「允许」的时间窗；
     /// 之后还有 scenePhase 回前台与 ContentView.onAppear 两条触发路径。
     private func scheduleEarlyDiscoveryRetries() {
-        for delay in [2.0, 6.0] {
+        // 权限弹窗可能晚于 6 秒才点「允许」，延长有界重建窗口覆盖这一情况。
+        for delay in [2.0, 6.0, 12.0, 20.0, 30.0] {
             Task { @MainActor [weak self] in
                 try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                self?.refreshLocalIp()
                 self?.discovery.restart()
             }
+        }
+    }
+
+    // MARK: - 在线状态保活
+
+    /// 每 2 秒对超过 2 秒未收到宣告的设备做一次 TCP 连接探测。
+    /// 只要对端 TCP 45211 可连就续期，避免发现通道偶发丢包导致列表清空。
+    private func startLivenessProbe() {
+        probeTimer?.invalidate()
+        probeTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                await self?.probeStaleDevices()
+            }
+        }
+    }
+
+    private func probeStaleDevices() async {
+        guard !isProbing else { return }
+        isProbing = true
+        defer { isProbing = false }
+        let now = Int64(Date().timeIntervalSince1970 * 1000)
+        let stale = devices.filter { now - $0.lastSeen > 2000 && !$0.ip.isEmpty }
+        for device in stale {
+            let alive = await probeTcp(host: device.ip, port: device.tcpPort)
+            if alive { registry.touch(device.deviceId) }
+        }
+    }
+
+    private func probeTcp(host: String, port: Int) async -> Bool {
+        let resolvedPort = port > 0 ? port : Int(TCP_PORT)
+        guard let nwPort = NWEndpoint.Port(rawValue: UInt16(truncatingIfNeeded: resolvedPort)) else { return false }
+        let connection = NWConnection(
+            host: NWEndpoint.Host(host), port: nwPort, using: .tcp
+        )
+        return await withCheckedContinuation { continuation in
+            let queue = DispatchQueue(label: "com.lantransfer.probe", qos: .utility)
+            let lock = NSLock()
+            var finished = false
+            let complete: (Bool) -> Void = { result in
+                lock.lock()
+                guard !finished else { lock.unlock(); return }
+                finished = true
+                lock.unlock()
+                continuation.resume(returning: result)
+                connection.cancel()
+            }
+            connection.stateUpdateHandler = { state in
+                switch state {
+                case .ready: complete(true)
+                case .failed, .cancelled: complete(false)
+                default: break
+                }
+            }
+            connection.start(queue: queue)
+            queue.asyncAfter(deadline: .now() + 1.0) { complete(false) }
         }
     }
 
@@ -248,6 +320,7 @@ final class AppState: ObservableObject {
     /// iOS 14+ 权限从「未决定」变为「允许」后，之前创建的 NetServiceBrowser /
     /// NetService / NWListener 不会自动恢复，必须重新创建，否则永久搜不到设备。
     func handleAppActive() {
+        refreshLocalIp()
         discovery.restart()
         isDiscovering = true
         for device in registry.devices {
@@ -281,12 +354,21 @@ final class AppState: ObservableObject {
     }
 
     func sendText(_ text: String) {
-        guard let peerId = activePeerId(), let peer = peerDevice(for: peerId) else { return }
-        Task { await chatChannel.sendText(text, to: peer) }
+        guard let peerId = activePeerId(), let peer = peerDevice(for: peerId) else {
+            sendFailure("对方设备不在线或未发现，请到设备页刷新后重试")
+            return
+        }
+        Task {
+            let sent = await chatChannel.sendText(text, to: peer)
+            if !sent { sendFailure("消息未能送达，请确认对方在线后重试") }
+        }
     }
 
     func sendImage(_ url: URL) {
-        guard let peerId = activePeerId(), let peer = peerDevice(for: peerId) else { return }
+        guard let peerId = activePeerId(), let peer = peerDevice(for: peerId) else {
+            sendFailure("对方设备不在线或未发现，请到设备页刷新后重试")
+            return
+        }
         Task {
             guard let data = try? Data(contentsOf: url),
                   let imageHash = try? SHA256.hash(data: data).hexString else { return }
@@ -334,17 +416,37 @@ final class AppState: ObservableObject {
         while let current = ptr {
             let flags = Int32(current.pointee.ifa_flags)
             if flags & (IFF_UP | IFF_RUNNING) == (IFF_UP | IFF_RUNNING),
-               current.pointee.ifa_addr?.pointee.sa_family == UInt8(AF_INET) {
-                var addr = current.pointee.ifa_addr!.pointee
+               let sockaddrPtr = current.pointee.ifa_addr,
+               sockaddrPtr.pointee.sa_family == UInt8(AF_INET) {
                 var buffer = [CChar](repeating: 0, count: Int(INET_ADDRSTRLEN))
-                if inet_ntop(AF_INET, &addr, &buffer, socklen_t(INET_ADDRSTRLEN)) != nil {
-                    let ip = String(cString: buffer)
-                    if !ip.hasPrefix("127.") { addresses.append(ip) }
+                // 关键修复：inet_ntop(AF_INET, ...) 的参数必须指向 4 字节的 in_addr。
+                // 旧代码传的是整个 sockaddr（16 字节），实际读取的前 4 字节为
+                // [sa_len=16, sa_family=2, sin_port 高 8 位, sin_port 低 8 位]，
+                // 恒定得到 16.2.0.0 —— 电脑端按此地址连 45211 必然超时。
+                let ip = sockaddrPtr.withMemoryRebound(to: sockaddr_in.self, capacity: 1) { sin -> String? in
+                    var sinAddr = sin.pointee.sin_addr
+                    guard inet_ntop(AF_INET, &sinAddr, &buffer, socklen_t(INET_ADDRSTRLEN)) != nil else { return nil }
+                    return String(cString: buffer)
+                }
+                if let ip, !ip.hasPrefix("127."), !ip.hasPrefix("169.254."), ip != "0.0.0.0" {
+                    addresses.append(ip)
                 }
             }
             ptr = current.pointee.ifa_next
         }
-        return addresses.first { $0.hasPrefix("192.168.") } ?? addresses.first
+        return addresses.first { $0.hasPrefix("192.168.") }
+            ?? addresses.first { $0.hasPrefix("10.") }
+            ?? addresses.first { $0.hasPrefix("172.") }
+            ?? addresses.first
+    }
+
+    /// WiFi 切换 / 重连后本机 IP 可能变化，刷新并重建发现通道，
+    /// 否则 mDNS TXT 与 UDP 宣告会持续广播旧地址。
+    private func refreshLocalIp() {
+        guard let ip = Self.localIPv4(), ip != selfDevice.ip else { return }
+        selfDevice.ip = ip
+        discovery.updateSelfDevice(selfDevice)
+        discovery.restart()
     }
 }
 

@@ -54,6 +54,16 @@ final class DeviceRegistry: ObservableObject {
         }
     }
 
+    /// TCP 探测确认对端仍在线时刷新时间戳，避免 mDNS / UDP 偶发丢包
+    /// 让设备列表每 6 秒清空一次。
+    func touch(_ deviceId: String) {
+        DispatchQueue.main.async {
+            guard let index = self.devices.firstIndex(where: { $0.deviceId == deviceId }) else { return }
+            self.devices[index].lastSeen = Int64(Date().timeIntervalSince1970 * 1000)
+            self.devices[index].online = true
+        }
+    }
+
     /// 标记设备离线并移除。
     func markOffline(_ deviceId: String) {
         DispatchQueue.main.async {

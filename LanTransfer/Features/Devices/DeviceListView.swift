@@ -94,6 +94,8 @@ struct DeviceListView: View {
                 }
             }
             .navigationTitle("设备")
+            // 进入设备页自动重建发现通道：本地网络权限弹窗结束后无需用户手动点刷新。
+            .onAppear { appState.refreshDevices() }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
@@ -235,7 +237,7 @@ private struct DeviceDetailView: View {
         ) { result in
             switch result {
             case .success(let urls):
-                appState.sendFiles(urls, to: device)
+                appState.sendFiles(urls, to: currentDevice())
             case .failure:
                 break
             }
@@ -248,7 +250,7 @@ private struct DeviceDetailView: View {
             switch result {
             case .success(let urls):
                 if let folder = urls.first {
-                    appState.sendFiles([folder], to: device)
+                    appState.sendFiles([folder], to: currentDevice())
                 }
             case .failure:
                 break
@@ -257,6 +259,11 @@ private struct DeviceDetailView: View {
         .navigationDestination(isPresented: $showChat) {
             ChatView(peerId: device.deviceId, peerName: device.displayName)
         }
+    }
+
+    /// 选择器弹出期间注册表可能已刷新，发送时取最新 IP，避免连到过期地址。
+    private func currentDevice() -> Device {
+        appState.devices.first { $0.deviceId == device.deviceId } ?? device
     }
 
     private func openChat() {

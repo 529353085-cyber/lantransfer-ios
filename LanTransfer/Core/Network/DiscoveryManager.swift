@@ -17,7 +17,7 @@ import Network
 import os
 
 final class DiscoveryManager: NSObject {
-    private let selfDevice: Device
+    private var selfDevice: Device
     private let registry: DeviceRegistry
     private let logger = Logger(subsystem: "com.lantransfer.ios", category: "discovery")
 
@@ -51,6 +51,11 @@ final class DiscoveryManager: NSObject {
     /// iOS 14+ 本地网络权限变化后，旧的浏览器/发布器/监听器不会自动恢复，必须重建。
     func restart() {
         start()
+    }
+
+    /// 本机 IP 变化后更新 TXT / UDP 宣告使用的地址（由 AppState 在网络切换时调用）。
+    func updateSelfDevice(_ device: Device) {
+        selfDevice = device
     }
 
     /// 用户手动刷新：重建全部发现通道并立刻广播一次宣告。
@@ -284,10 +289,9 @@ extension DiscoveryManager: NetServiceBrowserDelegate {
 
 extension DiscoveryManager: NetServiceDelegate {
     func netServiceDidResolveAddress(_ sender: NetService) {
-        defer {
-            sender.stop()
-            resolvingServices.remove(sender)
-        }
+        // 不再 resolve 后立刻 stop：系统会在地址变化时再次回调，
+        // 且保留服务实例可让浏览器持续缓存该设备，避免几秒后从列表消失。
+        // 服务在 stop()/restart() 时统一清理。
         guard let txt = sender.txtRecordData(),
               let infoValue = NetService.dictionary(fromTXTRecord: txt)["info"] else { return }
         // TXT 的 info 值是 base64(UTF8 JSON)，必须先 base64 解码再交给 JSONDecoder；

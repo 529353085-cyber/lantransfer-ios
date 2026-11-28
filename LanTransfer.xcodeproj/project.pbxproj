@@ -38,6 +38,7 @@
 		A00000000000000000000049 /* TransferView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000048 /* TransferView.swift */; };
 		A0000000000000000000004b /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000000000000000000004a /* AppState.swift */; };
 		A0000000000000000000004d /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0000000000000000000004c /* ContentView.swift */; };
+		A00000000000000000000061 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000060 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -72,6 +73,7 @@
 		A00000000000000000000048 /* TransferView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransferView.swift"; sourceTree = "<group>"; };
 		A0000000000000000000004a /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppState.swift"; sourceTree = "<group>"; };
 		A0000000000000000000004c /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContentView.swift"; sourceTree = "<group>"; };
+		A00000000000000000000060 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A00000000000000000000005 /* LanTransfer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LanTransfer.app; sourceTree = BUILT_PRODUCTS_DIR;};
 /* End PBXFileReference section */
 
@@ -101,6 +103,7 @@
 				A0000000000000000000004f /* Core */,
 				A00000000000000000000055 /* Features */,
 				A0000000000000000000005a /* UI */,
+				A00000000000000000000060 /* Assets.xcassets */,
 			);
 			path = LanTransfer;
 			sourceTree = "<group>";
@@ -303,6 +306,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A00000000000000000000061 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -387,11 +391,12 @@
 		A0000000000000000000000e /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 4;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = LanTransfer/Info.plist;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.lantransfer.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -404,11 +409,12 @@
 		A0000000000000000000000f /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 4;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = LanTransfer/Info.plist;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.lantransfer.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
